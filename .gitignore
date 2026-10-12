@@ -1,0 +1,16 @@
+# Personal activity files must stay local.
+*.fit
+*.FIT
+activity-share*.png
+merged-records.csv
+*-records.csv
+
+# Local development artifacts.
+/local-dev/
+__pycache__/
+*.py[cod]
+.venv/
+node_modules/
+share-previews/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,39 @@
+# RidePrism
+
+**English** · [简体中文](README.zh-CN.md)
+
+<img src="logo.svg" width="72" height="72" alt="RidePrism logo">
+
+RidePrism is a FIT viewer and sharing tool for outdoor cycling. Your activity data is processed offline in your browser and never uploaded to a server. No account is required, and there are no analytics or trackers. Your FIT files and background photos stay private when you use the site.
+
+Review a ride, merge multiple recordings, and create route-based share images—all in your browser. The interface supports Chinese and English, with light, dark, and system themes.
+
+## Features
+
+- **Review rides**: Explore distance, duration, average speed, heart rate, power, cadence, elevation gain, calories burned, laps, and device information. Inspect values on interactive charts, skip recorded pauses, or compress long sampling gaps.
+- **Explore routes**: View your ride on a route grid, local map tiles, or an online basemap, with routes colored by speed and optional kilometre, speed and elevation markers. Supports WGS-84 coordinates and GCJ-02 correction.
+- **Merge recordings**: Load multiple FIT files, combine them chronologically, and export a merged FIT or per-sample CSV.
+- **Create share images**: Combine routes and ride statistics with colors, layouts, backgrounds, titles, and a signature. Export high-resolution PNGs with flat or elevation-based 3D routes, using your own photos or a map background.
+
+When measured power is unavailable, the overview can estimate average cycling power from speed and elevation, with adjustable rider weight and bike settings. This windless estimate is a reference, not a replacement for a power meter; wind, drafting and data quality can substantially affect it.
+
+## Usage and deployment
+
+Open the site and select or drag in FIT files to explore your ride. Choose **Create share image** to make an image.
+
+Deploy directly to any static host; no build step or backend is needed. For local use, serve the project over HTTP.
+
+For translation maintenance and additional languages, see the [language guide](language/README.md).
+
+## Map backgrounds
+
+Online maps use OpenStreetMap and load only when you select them. Activity files are never uploaded, but tile requests reveal the approximate area being viewed, your IP address, and the page referrer to the map provider. The route grid and local basemaps do not make online map requests.
+
+Local basemaps support Web Mercator / XYZ tiles. Online maps retain attribution and must be used in accordance with the [OpenStreetMap tile usage policy](https://operations.osmfoundation.org/policies/tiles/).
+
+## Limitations
+
+- Common FIT activity fields are supported. Manufacturer-specific fields and pause information may not be fully recognized. A long sampling gap does not necessarily indicate a pause.
+- Merged exports preserve common activity data, but omit device information and developer-defined fields. Overlapping records are not automatically deduplicated. Coordinate correction and chart time compression affect display only. Compatibility with third-party platforms still needs verification.
+- 3D routes show recorded elevation changes; they do not generate terrain.
+- Individual files are limited to 64 MB, with a combined limit of 128 MB.

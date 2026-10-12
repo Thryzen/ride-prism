@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">RidePrism</title>
+  <desc id="desc">A riding route rising across three faces of a green prism.</desc>
+  <path d="M32 4 57 18v28L32 60 7 46V18Z" fill="#245D46"/>
+  <path d="m32 4 25 14-25 15L7 18Z" fill="#73B69A"/>
+  <path d="M32 33 57 18v28L32 60Z" fill="#3C826D"/>
+  <path d="M19 44 28 28l9 8 9-15" stroke="#F7F4E9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="19" cy="44" r="3" fill="#F7F4E9"/>
+  <circle cx="46" cy="21" r="3.5" fill="#E6BB76"/>
+</svg>

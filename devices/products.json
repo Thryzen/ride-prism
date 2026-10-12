@@ -1,0 +1,239 @@
+{
+  "products": [
+    {
+      "manufacturer": 1,
+      "product": 15,
+      "name": "Bike Speed Sensor (gen3)"
+    },
+    {
+      "manufacturer": 1,
+      "product": 16,
+      "name": "Bike Cadence Sensor (gen3)"
+    },
+    {
+      "manufacturer": 1,
+      "product": 1036,
+      "name": "Edge 500"
+    },
+    {
+      "manufacturer": 1,
+      "product": 1169,
+      "name": "Edge 800"
+    },
+    {
+      "manufacturer": 1,
+      "product": 1325,
+      "name": "Edge 200"
+    },
+    {
+      "manufacturer": 1,
+      "product": 1561,
+      "name": "Edge 510"
+    },
+    {
+      "manufacturer": 1,
+      "product": 1567,
+      "name": "Edge 810"
+    },
+    {
+      "manufacturer": 1,
+      "product": 1736,
+      "name": "Edge Touring / Touring Plus"
+    },
+    {
+      "manufacturer": 1,
+      "product": 1836,
+      "name": "Edge 1000"
+    },
+    {
+      "manufacturer": 1,
+      "product": 2067,
+      "name": "Edge 520"
+    },
+    {
+      "manufacturer": 1,
+      "product": 2147,
+      "name": "Edge 25"
+    },
+    {
+      "manufacturer": 1,
+      "product": 2161,
+      "name": "Vector 2"
+    },
+    {
+      "manufacturer": 1,
+      "product": 2162,
+      "name": "Vector 2S"
+    },
+    {
+      "manufacturer": 1,
+      "product": 2204,
+      "name": "Edge Explore 1000"
+    },
+    {
+      "manufacturer": 1,
+      "product": 2530,
+      "name": "Edge 820"
+    },
+    {
+      "manufacturer": 1,
+      "product": 2531,
+      "name": "Edge Explore 820"
+    },
+    {
+      "manufacturer": 1,
+      "product": 2713,
+      "name": "Edge 1030"
+    },
+    {
+      "manufacturer": 1,
+      "product": 2787,
+      "name": "Vector 3"
+    },
+    {
+      "manufacturer": 1,
+      "product": 2909,
+      "name": "Edge 130"
+    },
+    {
+      "manufacturer": 1,
+      "product": 2924,
+      "name": "Edge 1030 (Asia)"
+    },
+    {
+      "manufacturer": 1,
+      "product": 3011,
+      "name": "Edge Explore"
+    },
+    {
+      "manufacturer": 1,
+      "product": 3112,
+      "name": "Edge 520 Plus"
+    },
+    {
+      "manufacturer": 1,
+      "product": 3121,
+      "name": "Edge 530"
+    },
+    {
+      "manufacturer": 1,
+      "product": 3122,
+      "name": "Edge 830"
+    },
+    {
+      "manufacturer": 1,
+      "product": 3192,
+      "name": "Bike Speed Sensor (gen3)"
+    },
+    {
+      "manufacturer": 1,
+      "product": 3193,
+      "name": "Bike Cadence Sensor (gen3)"
+    },
+    {
+      "manufacturer": 1,
+      "product": 3299,
+      "name": "HRM-Dual"
+    },
+    {
+      "manufacturer": 1,
+      "product": 3300,
+      "name": "HRM-Pro"
+    },
+    {
+      "manufacturer": 1,
+      "product": 3349,
+      "name": "Edge 530 (APAC)"
+    },
+    {
+      "manufacturer": 1,
+      "product": 3350,
+      "name": "Edge 830 (APAC)"
+    },
+    {
+      "manufacturer": 1,
+      "product": 3558,
+      "name": "Edge 130 Plus"
+    },
+    {
+      "manufacturer": 1,
+      "product": 3570,
+      "name": "Edge 1030 Plus"
+    },
+    {
+      "manufacturer": 1,
+      "product": 3578,
+      "name": "Rally 100/200 series"
+    },
+    {
+      "manufacturer": 1,
+      "product": 3808,
+      "name": "Varia RCT715"
+    },
+    {
+      "manufacturer": 1,
+      "product": 3843,
+      "name": "Edge 1040"
+    },
+    {
+      "manufacturer": 1,
+      "product": 4061,
+      "name": "Edge 540"
+    },
+    {
+      "manufacturer": 1,
+      "product": 4062,
+      "name": "Edge 840"
+    },
+    {
+      "manufacturer": 1,
+      "product": 4130,
+      "name": "HRM-Pro Plus"
+    },
+    {
+      "manufacturer": 1,
+      "product": 4169,
+      "name": "Edge Explore 2"
+    },
+    {
+      "manufacturer": 1,
+      "product": 4305,
+      "name": "Edge 1040 (Asia)"
+    },
+    {
+      "manufacturer": 1,
+      "product": 4440,
+      "name": "Edge 1050"
+    },
+    {
+      "manufacturer": 1,
+      "product": 4446,
+      "name": "HRM-Fit"
+    },
+    {
+      "manufacturer": 1,
+      "product": 4525,
+      "name": "Rally 110/210 series"
+    },
+    {
+      "manufacturer": 1,
+      "product": 4606,
+      "name": "HRM 200"
+    },
+    {
+      "manufacturer": 1,
+      "product": 4633,
+      "name": "Edge 550"
+    },
+    {
+      "manufacturer": 1,
+      "product": 4634,
+      "name": "Edge 850"
+    },
+    {
+      "manufacturer": 1,
+      "product": 4655,
+      "name": "Edge MTB"
+    }
+  ]
+}

@@ -1,0 +1,992 @@
+{
+  "manufacturers": [
+    {
+      "id": 1,
+      "name": "Garmin"
+    },
+    {
+      "id": 2,
+      "name": "Garmin (ANT-FS)"
+    },
+    {
+      "id": 3,
+      "name": "Zephyr"
+    },
+    {
+      "id": 4,
+      "name": "Dayton"
+    },
+    {
+      "id": 5,
+      "name": "Idt"
+    },
+    {
+      "id": 6,
+      "name": "SRM"
+    },
+    {
+      "id": 7,
+      "name": "Quarq"
+    },
+    {
+      "id": 8,
+      "name": "iBike"
+    },
+    {
+      "id": 9,
+      "name": "Saris"
+    },
+    {
+      "id": 10,
+      "name": "Spark Hk"
+    },
+    {
+      "id": 11,
+      "name": "Tanita"
+    },
+    {
+      "id": 12,
+      "name": "Echowell"
+    },
+    {
+      "id": 13,
+      "name": "Dynastream OEM"
+    },
+    {
+      "id": 14,
+      "name": "Nautilus"
+    },
+    {
+      "id": 15,
+      "name": "Dynastream"
+    },
+    {
+      "id": 16,
+      "name": "Timex"
+    },
+    {
+      "id": 17,
+      "name": "Metrigear"
+    },
+    {
+      "id": 18,
+      "name": "Xelic"
+    },
+    {
+      "id": 19,
+      "name": "Beurer"
+    },
+    {
+      "id": 20,
+      "name": "Cardiosport"
+    },
+    {
+      "id": 21,
+      "name": "A&D"
+    },
+    {
+      "id": 22,
+      "name": "HMM"
+    },
+    {
+      "id": 23,
+      "name": "Suunto"
+    },
+    {
+      "id": 24,
+      "name": "Thita Elektronik"
+    },
+    {
+      "id": 25,
+      "name": "Gpulse"
+    },
+    {
+      "id": 26,
+      "name": "Clean Mobile"
+    },
+    {
+      "id": 27,
+      "name": "Pedal Brain"
+    },
+    {
+      "id": 28,
+      "name": "Peaksware"
+    },
+    {
+      "id": 29,
+      "name": "Saxonar"
+    },
+    {
+      "id": 30,
+      "name": "LeMond Fitness"
+    },
+    {
+      "id": 31,
+      "name": "Dexcom"
+    },
+    {
+      "id": 32,
+      "name": "Wahoo"
+    },
+    {
+      "id": 33,
+      "name": "Octane Fitness"
+    },
+    {
+      "id": 34,
+      "name": "Archinoetics"
+    },
+    {
+      "id": 35,
+      "name": "The Hurt Box"
+    },
+    {
+      "id": 36,
+      "name": "Citizen Systems"
+    },
+    {
+      "id": 37,
+      "name": "Magellan"
+    },
+    {
+      "id": 38,
+      "name": "o-synce"
+    },
+    {
+      "id": 39,
+      "name": "Holux"
+    },
+    {
+      "id": 40,
+      "name": "Concept2"
+    },
+    {
+      "id": 41,
+      "name": "Shimano"
+    },
+    {
+      "id": 42,
+      "name": "One Giant Leap"
+    },
+    {
+      "id": 43,
+      "name": "Ace Sensor"
+    },
+    {
+      "id": 44,
+      "name": "Brim Brothers"
+    },
+    {
+      "id": 45,
+      "name": "Xplova"
+    },
+    {
+      "id": 46,
+      "name": "Perception Digital"
+    },
+    {
+      "id": 47,
+      "name": "bf1systems"
+    },
+    {
+      "id": 48,
+      "name": "Pioneer"
+    },
+    {
+      "id": 49,
+      "name": "Spantec"
+    },
+    {
+      "id": 50,
+      "name": "Metalogics"
+    },
+    {
+      "id": 51,
+      "name": "4iiii"
+    },
+    {
+      "id": 52,
+      "name": "Seiko Epson"
+    },
+    {
+      "id": 53,
+      "name": "Seiko Epson OEM"
+    },
+    {
+      "id": 54,
+      "name": "Ifor Powell"
+    },
+    {
+      "id": 55,
+      "name": "Maxwell Guider"
+    },
+    {
+      "id": 56,
+      "name": "Star Trac"
+    },
+    {
+      "id": 57,
+      "name": "Breakaway"
+    },
+    {
+      "id": 58,
+      "name": "Alatech Technology Ltd"
+    },
+    {
+      "id": 59,
+      "name": "Mio Technology Europe"
+    },
+    {
+      "id": 60,
+      "name": "ROTOR"
+    },
+    {
+      "id": 61,
+      "name": "Geonaute"
+    },
+    {
+      "id": 62,
+      "name": "Id Bike"
+    },
+    {
+      "id": 63,
+      "name": "Specialized"
+    },
+    {
+      "id": 64,
+      "name": "Wtek"
+    },
+    {
+      "id": 65,
+      "name": "Physical Enterprises"
+    },
+    {
+      "id": 66,
+      "name": "North Pole Engineering"
+    },
+    {
+      "id": 67,
+      "name": "BKOOL"
+    },
+    {
+      "id": 68,
+      "name": "CatEye"
+    },
+    {
+      "id": 69,
+      "name": "Stages Cycling"
+    },
+    {
+      "id": 70,
+      "name": "SIGMA SPORT"
+    },
+    {
+      "id": 71,
+      "name": "TomTom"
+    },
+    {
+      "id": 72,
+      "name": "Peripedal"
+    },
+    {
+      "id": 73,
+      "name": "Wattbike"
+    },
+    {
+      "id": 76,
+      "name": "Moxy"
+    },
+    {
+      "id": 77,
+      "name": "Ciclosport"
+    },
+    {
+      "id": 78,
+      "name": "Powerbahn"
+    },
+    {
+      "id": 79,
+      "name": "Acorn Projects Aps"
+    },
+    {
+      "id": 80,
+      "name": "Lifebeam"
+    },
+    {
+      "id": 81,
+      "name": "Bontrager"
+    },
+    {
+      "id": 82,
+      "name": "Wellgo"
+    },
+    {
+      "id": 83,
+      "name": "Scosche"
+    },
+    {
+      "id": 84,
+      "name": "MAGURA"
+    },
+    {
+      "id": 85,
+      "name": "Woodway"
+    },
+    {
+      "id": 86,
+      "name": "Elite"
+    },
+    {
+      "id": 87,
+      "name": "Nielsen Kellerman"
+    },
+    {
+      "id": 88,
+      "name": "Dk City"
+    },
+    {
+      "id": 89,
+      "name": "Tacx"
+    },
+    {
+      "id": 90,
+      "name": "Direction Technology"
+    },
+    {
+      "id": 91,
+      "name": "Magtonic"
+    },
+    {
+      "id": 92,
+      "name": "1PartCarbon"
+    },
+    {
+      "id": 93,
+      "name": "Inside Ride Technologies"
+    },
+    {
+      "id": 94,
+      "name": "Sound Of Motion"
+    },
+    {
+      "id": 95,
+      "name": "Stryd"
+    },
+    {
+      "id": 96,
+      "name": "ICG"
+    },
+    {
+      "id": 97,
+      "name": "MiPulse"
+    },
+    {
+      "id": 98,
+      "name": "Bsx Athletics"
+    },
+    {
+      "id": 99,
+      "name": "LOOK"
+    },
+    {
+      "id": 100,
+      "name": "Campagnolo"
+    },
+    {
+      "id": 101,
+      "name": "Body Bike Smart"
+    },
+    {
+      "id": 102,
+      "name": "Praxis Works"
+    },
+    {
+      "id": 103,
+      "name": "Limits Technology"
+    },
+    {
+      "id": 104,
+      "name": "Topaction Technology"
+    },
+    {
+      "id": 105,
+      "name": "cosinuss"
+    },
+    {
+      "id": 106,
+      "name": "Fitcare"
+    },
+    {
+      "id": 107,
+      "name": "Magene"
+    },
+    {
+      "id": 108,
+      "name": "Giant"
+    },
+    {
+      "id": 109,
+      "name": "Tigra Sport"
+    },
+    {
+      "id": 110,
+      "name": "Salutron"
+    },
+    {
+      "id": 111,
+      "name": "Technogym"
+    },
+    {
+      "id": 112,
+      "name": "Bryton Sensors"
+    },
+    {
+      "id": 113,
+      "name": "Latitude Limited"
+    },
+    {
+      "id": 114,
+      "name": "Soaring Technology"
+    },
+    {
+      "id": 115,
+      "name": "iGPSPORT"
+    },
+    {
+      "id": 116,
+      "name": "ThinkRider"
+    },
+    {
+      "id": 117,
+      "name": "Gopher Sport"
+    },
+    {
+      "id": 118,
+      "name": "Waterrower"
+    },
+    {
+      "id": 119,
+      "name": "Orangetheory"
+    },
+    {
+      "id": 120,
+      "name": "INPEAK"
+    },
+    {
+      "id": 121,
+      "name": "Kinetic"
+    },
+    {
+      "id": 122,
+      "name": "Johnson Health Tech"
+    },
+    {
+      "id": 123,
+      "name": "Polar"
+    },
+    {
+      "id": 124,
+      "name": "See.Sense"
+    },
+    {
+      "id": 125,
+      "name": "Nci Technology"
+    },
+    {
+      "id": 126,
+      "name": "IQsquare"
+    },
+    {
+      "id": 127,
+      "name": "LEOMO"
+    },
+    {
+      "id": 128,
+      "name": "iFIT"
+    },
+    {
+      "id": 129,
+      "name": "COROS"
+    },
+    {
+      "id": 130,
+      "name": "Versa Design"
+    },
+    {
+      "id": 131,
+      "name": "Chileaf"
+    },
+    {
+      "id": 132,
+      "name": "CYCPLUS"
+    },
+    {
+      "id": 133,
+      "name": "Gravaa"
+    },
+    {
+      "id": 134,
+      "name": "SIGEYI"
+    },
+    {
+      "id": 135,
+      "name": "COOSPO"
+    },
+    {
+      "id": 136,
+      "name": "GEOID"
+    },
+    {
+      "id": 137,
+      "name": "Bosch"
+    },
+    {
+      "id": 138,
+      "name": "Kyto"
+    },
+    {
+      "id": 139,
+      "name": "Kinetic Sports"
+    },
+    {
+      "id": 140,
+      "name": "Decathlon"
+    },
+    {
+      "id": 141,
+      "name": "TQ Systems"
+    },
+    {
+      "id": 142,
+      "name": "TAG Heuer"
+    },
+    {
+      "id": 143,
+      "name": "Keiser Fitness"
+    },
+    {
+      "id": 144,
+      "name": "Zwift"
+    },
+    {
+      "id": 145,
+      "name": "Porsche Ep"
+    },
+    {
+      "id": 146,
+      "name": "Blackbird"
+    },
+    {
+      "id": 147,
+      "name": "MEILAN"
+    },
+    {
+      "id": 148,
+      "name": "EZON"
+    },
+    {
+      "id": 149,
+      "name": "Laisi"
+    },
+    {
+      "id": 150,
+      "name": "MYZONE"
+    },
+    {
+      "id": 151,
+      "name": "Abawo"
+    },
+    {
+      "id": 152,
+      "name": "Bafang"
+    },
+    {
+      "id": 153,
+      "name": "Luhong Technology"
+    },
+    {
+      "id": 255,
+      "name": "Development"
+    },
+    {
+      "id": 257,
+      "name": "Healthandlife"
+    },
+    {
+      "id": 258,
+      "name": "Lezyne"
+    },
+    {
+      "id": 259,
+      "name": "Scribe Labs"
+    },
+    {
+      "id": 260,
+      "name": "Zwift"
+    },
+    {
+      "id": 261,
+      "name": "Watteam"
+    },
+    {
+      "id": 262,
+      "name": "Recon"
+    },
+    {
+      "id": 263,
+      "name": "Favero"
+    },
+    {
+      "id": 264,
+      "name": "Dynovelo"
+    },
+    {
+      "id": 265,
+      "name": "Strava"
+    },
+    {
+      "id": 266,
+      "name": "Precor"
+    },
+    {
+      "id": 267,
+      "name": "Bryton"
+    },
+    {
+      "id": 268,
+      "name": "SRAM"
+    },
+    {
+      "id": 269,
+      "name": "Navman"
+    },
+    {
+      "id": 270,
+      "name": "COBI"
+    },
+    {
+      "id": 271,
+      "name": "Spivi"
+    },
+    {
+      "id": 272,
+      "name": "Mio Magellan"
+    },
+    {
+      "id": 273,
+      "name": "Evesports"
+    },
+    {
+      "id": 274,
+      "name": "Sensitivus Gauge"
+    },
+    {
+      "id": 275,
+      "name": "Podoon"
+    },
+    {
+      "id": 276,
+      "name": "Life Time Fitness"
+    },
+    {
+      "id": 277,
+      "name": "Falco E Motors"
+    },
+    {
+      "id": 278,
+      "name": "Minoura"
+    },
+    {
+      "id": 279,
+      "name": "Cycliq"
+    },
+    {
+      "id": 280,
+      "name": "Luxottica"
+    },
+    {
+      "id": 281,
+      "name": "TrainerRoad"
+    },
+    {
+      "id": 282,
+      "name": "The Sufferfest"
+    },
+    {
+      "id": 283,
+      "name": "Full Speed Ahead"
+    },
+    {
+      "id": 284,
+      "name": "VirtualTraining"
+    },
+    {
+      "id": 285,
+      "name": "Feedbacksports"
+    },
+    {
+      "id": 286,
+      "name": "OMATA"
+    },
+    {
+      "id": 287,
+      "name": "VDO"
+    },
+    {
+      "id": 288,
+      "name": "Magneticdays"
+    },
+    {
+      "id": 289,
+      "name": "Hammerhead"
+    },
+    {
+      "id": 290,
+      "name": "Kinetic By Kurt"
+    },
+    {
+      "id": 291,
+      "name": "Shapelog"
+    },
+    {
+      "id": 292,
+      "name": "Dabuziduo"
+    },
+    {
+      "id": 293,
+      "name": "JetBlack"
+    },
+    {
+      "id": 294,
+      "name": "COROS"
+    },
+    {
+      "id": 295,
+      "name": "Virtugo"
+    },
+    {
+      "id": 296,
+      "name": "Velosense"
+    },
+    {
+      "id": 297,
+      "name": "Cycligentinc"
+    },
+    {
+      "id": 298,
+      "name": "Trailforks"
+    },
+    {
+      "id": 299,
+      "name": "MAHLE ebikemotion"
+    },
+    {
+      "id": 300,
+      "name": "Nurvv"
+    },
+    {
+      "id": 301,
+      "name": "Microprogram"
+    },
+    {
+      "id": 302,
+      "name": "Zone5cloud"
+    },
+    {
+      "id": 303,
+      "name": "greenTEG"
+    },
+    {
+      "id": 304,
+      "name": "Yamaha Motors"
+    },
+    {
+      "id": 305,
+      "name": "WHOOP"
+    },
+    {
+      "id": 306,
+      "name": "Gravaa"
+    },
+    {
+      "id": 307,
+      "name": "Onelap"
+    },
+    {
+      "id": 308,
+      "name": "MONARK"
+    },
+    {
+      "id": 309,
+      "name": "FORM"
+    },
+    {
+      "id": 310,
+      "name": "Decathlon"
+    },
+    {
+      "id": 311,
+      "name": "Syncros"
+    },
+    {
+      "id": 312,
+      "name": "Heatup"
+    },
+    {
+      "id": 313,
+      "name": "Cannondale"
+    },
+    {
+      "id": 314,
+      "name": "True Fitness"
+    },
+    {
+      "id": 315,
+      "name": "RGT Cycling"
+    },
+    {
+      "id": 316,
+      "name": "Vasa"
+    },
+    {
+      "id": 317,
+      "name": "Race Republic"
+    },
+    {
+      "id": 318,
+      "name": "FAZUA"
+    },
+    {
+      "id": 319,
+      "name": "Oreka Training"
+    },
+    {
+      "id": 320,
+      "name": "LSEC"
+    },
+    {
+      "id": 321,
+      "name": "Lululemon Studio"
+    },
+    {
+      "id": 322,
+      "name": "Shanyue"
+    },
+    {
+      "id": 323,
+      "name": "Spinning Mda"
+    },
+    {
+      "id": 324,
+      "name": "Hilldating"
+    },
+    {
+      "id": 325,
+      "name": "AeroSensor"
+    },
+    {
+      "id": 326,
+      "name": "Nike"
+    },
+    {
+      "id": 327,
+      "name": "Magicshine"
+    },
+    {
+      "id": 328,
+      "name": "Ictrainer"
+    },
+    {
+      "id": 329,
+      "name": "Absolute Cycling"
+    },
+    {
+      "id": 330,
+      "name": "eo SwimBETTER"
+    },
+    {
+      "id": 331,
+      "name": "MyWhoosh"
+    },
+    {
+      "id": 332,
+      "name": "Ravemen"
+    },
+    {
+      "id": 333,
+      "name": "Tektro Racing Products"
+    },
+    {
+      "id": 334,
+      "name": "Darad Innovation Corporation"
+    },
+    {
+      "id": 335,
+      "name": "Cycloptim"
+    },
+    {
+      "id": 337,
+      "name": "Runna"
+    },
+    {
+      "id": 339,
+      "name": "Zepp"
+    },
+    {
+      "id": 340,
+      "name": "Peloton"
+    },
+    {
+      "id": 341,
+      "name": "CARV"
+    },
+    {
+      "id": 342,
+      "name": "Tissot"
+    },
+    {
+      "id": 345,
+      "name": "Real Velo"
+    },
+    {
+      "id": 346,
+      "name": "Wetech"
+    },
+    {
+      "id": 347,
+      "name": "Jespr"
+    },
+    {
+      "id": 348,
+      "name": "Huawei"
+    },
+    {
+      "id": 349,
+      "name": "Gotoes"
+    },
+    {
+      "id": 350,
+      "name": "Cadence App"
+    },
+    {
+      "id": 351,
+      "name": "Una Watch"
+    },
+    {
+      "id": 352,
+      "name": "Tymewear"
+    },
+    {
+      "id": 353,
+      "name": "Exposure Lights"
+    },
+    {
+      "id": 354,
+      "name": "Forto Cycling"
+    },
+    {
+      "id": 5759,
+      "name": "Actigraphcorp"
+    }
+  ]
+}
