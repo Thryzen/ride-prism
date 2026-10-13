@@ -18,7 +18,14 @@
     try{const url=new URL(root.location.href);url.searchParams.set('appearance',next);root.history.replaceState(null,'',url.href);}catch{}
     return apply();
   }
-  function bind(){root.document?.getElementById('appearance')?.addEventListener('change',event=>set(event.target.value));apply();}
+  function bind(){
+    const control=root.document?.getElementById('appearance');let pointerSelection=false;
+    control?.addEventListener('pointerdown',()=>{pointerSelection=true;});
+    control?.addEventListener('keydown',()=>{pointerSelection=false;});
+    control?.addEventListener('blur',()=>{pointerSelection=false;});
+    control?.addEventListener('change',event=>{set(event.target.value);if(pointerSelection)control.blur();});
+    apply();
+  }
   apply();
   if(root.document?.readyState==='loading')root.document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   if(media?.addEventListener)media.addEventListener('change',()=>{if(preference==='system')apply();});else media?.addListener?.(()=>{if(preference==='system')apply();});

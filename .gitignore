@@ -4,6 +4,7 @@
 activity-share*.png
 merged-records.csv
 *-records.csv
+*-all-data.csv
 
 # Local development artifacts.
 /local-dev/

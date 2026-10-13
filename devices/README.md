@@ -4,8 +4,6 @@
 
 `manufacturers.json` provides manufacturer names using `id` and `name`. `products.json` currently includes Garmin model mappings, with `manufacturer`, `product` and `name` in each entry. Other brands can still display names supplied by the FIT file.
 
-Model names follow the available device definitions, preserving family and regional distinctions where applicable.
-
 ## Updating the catalog
 
 Update manufacturer names or model mappings in the corresponding catalog. Confirm numeric IDs before adding entries. Do not submit personal FIT recordings or serial numbers.

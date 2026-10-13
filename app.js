@@ -4,7 +4,7 @@ const $ = id => document.getElementById(id);
 let activity = null, currentName = '', generation = 0, loadedFiles = [], shareData = null;
 const routeMap = new RouteMap.Viewer($('route'), $('mapStatus'), $('mapCredit'));
 const sports = {0:'通用活动',1:'跑步',2:'骑行',5:'游泳',10:'健身',11:'步行',12:'越野滑雪',13:'高山滑雪',15:'划船',17:'徒步',21:'皮划艇',53:'攀岩'};
-const metrics = {heartRate:['心率','bpm',1],speed:['速度','km/h',3.6],altitude:['海拔','m',1],power:['功率','W',1],cadence:['步频 / 踏频','rpm',1],temperature:['温度','°C',1]};
+const metrics = {heartRate:['心率','bpm',1],speed:['速度','km/h',3.6],altitude:['海拔','m',1],power:['功率','W',1],cadence:['步频 / 踏频','rpm',1],temperature:['温度','°C',1],grade:['坡度','%',1]};
 const number = (value, digits=0) => Number.isFinite(value) ? value.toLocaleString(typeof I18n==='undefined'?'zh-CN':I18n.locale,{maximumFractionDigits:digits,minimumFractionDigits:digits}) : '—';
 function duration(seconds) {
   if (!Number.isFinite(seconds)) return '—';
@@ -56,13 +56,91 @@ function estimatedPower(measured){
 function svgElement(name, attributes={}) {const el=document.createElementNS('http://www.w3.org/2000/svg',name);for(const [key,value] of Object.entries(attributes))el.setAttribute(key,String(value));return el;}
 function svgText(svg,x,y,text,anchor='start') {const el=svgElement('text',{x,y,'text-anchor':anchor});el.textContent=text;svg.append(el);}
 function empty(container,text) {container.replaceChildren();const p=document.createElement('p');p.className='empty';p.textContent=text;container.append(p);}
+let heartZoneBounds=null;
+const climbCache=new WeakMap();
+function climbProfile(climb){
+  const wrapper=document.createElement('div');wrapper.className='climb-profile';
+  const svg=svgElement('svg',{viewBox:'0 0 880 190',role:'img','aria-label':l10n('爬坡海拔与坡度变化')});
+  const points=climb.profile||[],heights=extent(points,'altitude');if(!heights||points.length<2)return wrapper;
+  const left=54,right=18,top=18,bottom=36,width=880,height=190,span=Math.max(1,heights[1]-heights[0]);
+  const x=point=>left+(point.distance-climb.startDistance)/climb.length*(width-left-right),y=point=>top+(heights[1]-point.altitude)/span*(height-top-bottom);
+  for(let i=0;i<=2;i++){const lineY=top+i*(height-top-bottom)/2;svg.append(svgElement('line',{x1:left,x2:width-right,y1:lineY,y2:lineY,'class':'climb-grid'}));svgText(svg,left-8,lineY+4,number(heights[1]-span*i/2)+' m','end');}
+  const colors=['#78a6bb','#8db56b','#d5bf55','#e69848','#d76855','#ab5473'];
+  const color=grade=>colors[grade<0?0:grade<3?1:grade<6?2:grade<9?3:grade<12?4:5];
+  for(let i=1;i<points.length;i++){
+    const a=points[i-1],b=points[i];
+    if(b.breakBefore)continue;
+    svg.append(svgElement('path',{d:'M'+x(a)+','+(height-bottom)+' L'+x(a)+','+y(a)+' L'+x(b)+','+y(b)+' L'+x(b)+','+(height-bottom)+' Z',fill:color((a.grade+b.grade)/2),'class':'climb-profile-area'}));
+  }
+  svg.append(svgElement('path',{d:points.map((p,i)=>(i&&!p.breakBefore?'L':'M')+x(p)+','+y(p)).join(' '),'class':'climb-profile-line',fill:'none'}));
+  for(let i=0;i<=4;i++)svgText(svg,left+i*(width-left-right)/4,height-10,number(climb.length*i/4000,2)+' km',i===0?'start':i===4?'end':'middle');
+  wrapper.append(svg);
+  const legend=document.createElement('div');legend.className='climb-profile-legend';
+  ['<0%','0–<3%','3–<6%','6–<9%','9–<12%','≥12%'].forEach((text,i)=>{const item=document.createElement('span'),swatch=document.createElement('i');swatch.style.backgroundColor=colors[i];const label=document.createElement('span');label.textContent=text;item.append(swatch,label);legend.append(item);});
+  wrapper.append(legend);return wrapper;
+}
+function drawClimbs(){
+  const panel=$('climbAnalysis');panel.hidden=!activity||$('metric').value!=='grade';if(panel.hidden)return;
+  const records=activity.records,events=activity.events||[];let cached=climbCache.get(records);
+  if(!cached||cached.events!==events){cached={events,result:ChartTimeline.climbAnalysis.analyze(records,events)};climbCache.set(records,cached);}
+  const {climbs,usable}=cached.result,container=$('climbList');container.replaceChildren();
+  if(!climbs.length){empty(container,l10n(usable?'未识别到符合条件的爬坡。':'缺少可用于爬坡分析的连续距离与海拔记录。'));return;}
+  const table=document.createElement('table');table.className='climb-table';table.setAttribute('aria-label',l10n('爬坡分析'));
+  const head=document.createElement('thead'),heading=document.createElement('tr');
+  for(const title of ['爬坡','位置','长度','累计爬升','平均坡度','最大坡度','用时','平均速度','平均心率','平均功率']){const th=document.createElement('th');th.setAttribute('scope','col');th.textContent=l10n(title);heading.append(th);}head.append(heading);
+  const body=document.createElement('tbody');
+  climbs.forEach((climb,index)=>{
+    const row=document.createElement('tr'),name=document.createElement('td'),label=document.createElement('strong'),badge=document.createElement('span');
+    label.textContent=l10n('爬坡')+' '+number(index+1);badge.className='climb-category';badge.textContent=climb.category||l10n('未分级');name.append(label,badge);
+    if((activity.sources||[]).length>1){const source=document.createElement('small');source.textContent=activity.sources.find(s=>s.sourceId===climb.sourceId)?.name||'';name.append(source);}
+    row.append(name);
+    for(const value of [number(climb.startDistance/1000,2)+'–'+number(climb.endDistance/1000,2)+' km',number(climb.length/1000,2)+' km',number(climb.gain)+' m',number(climb.avgGrade,1)+'%',number(climb.maxGrade,1)+'%',duration(climb.seconds),number(climb.avgSpeed*3.6,1)+' km/h',number(climb.avgHeartRate)+' bpm',number(climb.avgPower)+' W']){const cell=document.createElement('td');cell.textContent=value;row.append(cell);}body.append(row);
+    const profileRow=document.createElement('tr'),profileCell=document.createElement('td');profileRow.className='climb-profile-row';profileCell.setAttribute('colspan','10');profileCell.append(climbProfile(climb));profileRow.append(profileCell);body.append(profileRow);
+  });
+  table.append(head,body);container.append(table);
+}
+function drawHeartZones(){
+  const panel=$('heartZones');panel.hidden=!activity||$('metric').value!=='heartRate';if(panel.hidden)return;
+  const bars=$('heartZoneBars'),status=$('heartZoneStatus');bars.replaceChildren();
+  if(!heartZoneBounds){status.textContent=l10n('填写最大心率或四个分界值，查看区间分布。');return;}
+  const entered=[1,2,3,4].map(i=>Number($('zoneBoundary'+i).value));
+  if(entered.some((value,i)=>value!==heartZoneBounds[i])){status.textContent=l10n('四个分界值须在 1–254 bpm 内且依次递增。');return;}
+  const gap=Number($('gapThreshold').value);
+  if($('compressGaps').checked&&(!Number.isFinite(gap)||gap<.1||gap>86400)){status.textContent=l10n('请填写 0.1–86400 秒的长采样门槛。');return;}
+  const result=ChartTimeline.heartRateZones(activity.records,activity.events,heartZoneBounds,$('compressGaps').checked?{gapThresholdSeconds:gap}:{});
+  const colors=['#6ba9d0','#50afac','#96b65a','#dda54a','#d67065'];
+  const names=['恢复','有氧耐力','节奏','阈值','高强度'];
+  for(let i=0;i<5;i++){
+    const row=document.createElement('div');row.className='heart-zone-row';
+    const label=document.createElement('strong'),zone=document.createElement('span'),name=document.createElement('span');label.className='heart-zone-label';zone.textContent='Z'+(i+1);name.textContent=l10n(names[i]);label.append(zone,name);
+    const range=document.createElement('span');range.className='heart-zone-range';range.textContent=(i===0?'< '+heartZoneBounds[0]:i===4?'≥ '+heartZoneBounds[3]:heartZoneBounds[i-1]+'–< '+heartZoneBounds[i])+' bpm';
+    const track=document.createElement('div');track.className='heart-zone-track';const fill=document.createElement('div');fill.style.width=(result.total?result.seconds[i]/result.total*100:0)+'%';fill.style.backgroundColor=colors[i];track.append(fill);
+    const value=document.createElement('span'),time=document.createElement('span'),separator=document.createElement('span'),percentage=document.createElement('span');value.className='heart-zone-value';time.textContent=duration(result.seconds[i]);separator.textContent='·';separator.setAttribute('aria-hidden','true');percentage.textContent=number(result.total?result.seconds[i]/result.total*100:0,1)+'%';value.append(time,separator,percentage);
+    row.append(label,range,track,value);bars.append(row);
+  }
+  status.textContent=result.total?l10n('有效心率时长：')+duration(result.total)+l10n('。按采样间隔累计，略过已识别暂停、无效心率和长采样缺口。'):l10n('没有可累计时长的有效心率记录。');
+}
+function updateHeartZones(fromMax=false){
+  const maximum=$('zoneMaxHeartRate'),inputs=[1,2,3,4].map(i=>$('zoneBoundary'+i));
+  if(fromMax){const value=Number(maximum.value);if(!Number.isFinite(value)||value<60||value>250){$('heartZoneStatus').textContent=l10n('最大心率请输入 60–250 bpm。');return;}inputs.forEach((input,i)=>input.value=Math.round(value*(.6+i*.1)));}
+  const bounds=inputs.map(input=>Number(input.value));
+  if(bounds.some((v,i)=>!Number.isInteger(v)||v<1||v>254||(i&&v<=bounds[i-1]))){$('heartZoneBars').replaceChildren();$('heartZoneStatus').textContent=l10n('四个分界值须在 1–254 bpm 内且依次递增。');return;}
+  if(!fromMax)maximum.value='';heartZoneBounds=bounds;drawHeartZones();
+}
+$('zoneMaxHeartRate').addEventListener('change',()=>updateHeartZones(true));
+for(let i=1;i<=4;i++)$('zoneBoundary'+i).addEventListener('change',()=>updateHeartZones());
 function drawChart() {
   if(!activity)return;
+  drawHeartZones();
+  try{drawClimbs();}catch(error){empty($('climbList'),l10n('爬坡分析暂不可用，请刷新页面重试。'));console.error('Climb analysis unavailable:',error);}
   const key=$('metric').value,[rawLabel,unit,factor]=metrics[key],label=l10n(rawLabel),container=$('chart');
   const summary=$('chartSummary');summary.replaceChildren();summary.hidden=false;
   const peakSpeed=key==='speed'?extreme('maxSpeed','speed',1):null;
   const averageSpeed=key==='speed'?speedSummary():null;
   const sessions=activity.sessions||[],cycling=sessions.length&&sessions.every(s=>s.sport===2),running=sessions.length&&sessions.every(s=>s.sport===1);
+  const recordedCycles=key==='cadence'&&cycling?sum(sessions,'totalCycles'):null;
+  const totalCycles=key==='cadence'&&cycling?(recordedCycles??ChartTimeline.cadenceCycles(activity.records,activity.events)):null;
+  const gradeTimes=key==='grade'?ChartTimeline.gradeDurations(activity.records,activity.events):null;
   const readings=key==='speed'?[
     [l10n(averageSpeed.timerKnown?'平均速度':'平均速度（含暂停）'),Number.isFinite(averageSpeed.value)?averageSpeed.value*3.6:null,'km/h',1],
     [l10n('最快速度'),Number.isFinite(peakSpeed)?peakSpeed*3.6:null,'km/h',1]
@@ -79,14 +157,21 @@ function drawChart() {
     [l10n('最高功率'),extreme('maxPower','power',1),'W',0]
   ]:key==='cadence'?[
     [l10n(cycling?'平均踏频':running?'平均步频':'平均步频 / 踏频'),weighted(sessions,'avgCadence')??mean(activity.records,'cadence'),'rpm',0],
-    [l10n(cycling?'最高踏频':running?'最高步频':'最高步频 / 踏频'),extreme('maxCadence','cadence',1),'rpm',0]
+    [l10n(cycling?'最高踏频':running?'最高步频':'最高步频 / 踏频'),extreme('maxCadence','cadence',1),'rpm',0],
+    ...(cycling?[[l10n('累计踩踏圈数'),totalCycles,l10n('圈'),0,recordedCycles===null?'≈ ':'']]:[])
   ]:key==='temperature'?[
     [l10n('平均温度'),weighted(sessions,'avgTemperature')??mean(activity.records,'temperature'),'°C',1],
     [l10n('最高温度'),extreme('maxTemperature','temperature',1),'°C',1],
     [l10n('最低温度'),extent(activity.records,'temperature')?.[0]??null,'°C',1]
+  ]:key==='grade'?[
+    [l10n('最高坡度'),extent(activity.records,'grade')?.[1]??null,'%',2],
+    [l10n('最低坡度'),extent(activity.records,'grade')?.[0]??null,'%',2],
+    [l10n('平路时长'),gradeTimes.flat,'','time'],
+    [l10n('爬坡时长'),gradeTimes.uphill,'','time'],
+    [l10n('放坡时长'),gradeTimes.downhill,'','time']
   ]:[];
   summary.hidden=!readings.length;
-  for(const [name,value,unit,digits]of readings){const item=document.createElement('div'),title=document.createElement('span'),reading=document.createElement('strong');title.textContent=name;reading.textContent=number(value,digits)+' '+unit;item.append(title,reading);summary.append(item);}
+  for(const [name,value,unit,digits,prefix='']of readings){const item=document.createElement('div'),title=document.createElement('span'),reading=document.createElement('strong');title.textContent=name;reading.textContent=(Number.isFinite(value)?prefix:'')+(digits==='time'?duration(value):number(value,digits))+(unit?' '+unit:'');if(prefix)reading.title=l10n('按有效踏频记录估算，已略过可识别的暂停与长记录缺口。');item.append(title,reading);summary.append(item);}
   const skipPauses=$('skipPauses').checked,compressGaps=$('compressGaps').checked;
   const gapThresholdSeconds=Number($('gapThreshold').value);
   $('gapControls').hidden=!compressGaps;
@@ -97,8 +182,6 @@ function drawChart() {
   if(skipPauses)notes.push(timeline.pauseCount?l10n`识别 ${timeline.eventPauseCount} 个事件区间；略过 ${timeline.removed} 个记录点，压缩 ${duration(timeline.pausedMs/1000)}`:l10n('未识别到标准计时暂停事件；这不代表没有暂停，可尝试“压缩长采样间隔”'));
   if(compressGaps)notes.push(l10n`门槛 ${number(gapThresholdSeconds,1)} 秒，压缩 ${timeline.gapCount} 处长采样间隔，共 ${duration(timeline.gapMs/1000)}（间隔不一定是暂停）`);
   $('timelineStatus').textContent=notes.length?notes.join('；')+l10n('。横轴为压缩后的相对时间，原始数据及 CSV 不变。'):l10n('显示完整记录时间。');
-  const diagnostic=ChartTimeline.diagnostics(activity.records,activity.events,activity.sessions);
-  $('pauseDiagnostics').textContent=l10n`事件消息 ${diagnostic.eventCount} 条；计时事件 ${diagnostic.timerCount} 条（其中 ${diagnostic.missingTime} 条缺少时间）；事件/类型及数量：${diagnostic.types.map(([type,count])=>type+' × '+count).join('，')||l10n('无')}。摘要经过时间与计时时间之差 ${duration(diagnostic.summaryPause)}；最长采样间隔 ${duration(diagnostic.longestGap/1000)}。`;
   const times=extent(values,'chartTimestamp'),range=extent(values,key);
   if(!times||!range){empty(container,l10n('这份记录没有可用的')+label+l10n('时间序列。'));return;}
   const width=1000,height=300,left=66,right=24,top=24,bottom=42;
@@ -109,6 +192,7 @@ function drawChart() {
   const svg=svgElement('svg',{viewBox:l10n`0 0 ${width} ${height}`,role:'img','aria-label':label+l10n('随时间变化曲线')});
   for(let i=0;i<=4;i++){const py=top+i*(height-top-bottom)/4;svg.append(svgElement('line',{x1:left,x2:width-right,y1:py,y2:py,stroke:'#e6ede3'}));svgText(svg,left-12,py+4,number(high-i*(high-low)/4,1),'end');}
   for(let i=0;i<=4;i++)svgText(svg,left+i*(width-left-right)/4,height-12,duration(span*i/4000),'middle');
+  if(key==='grade'&&low<=0&&high>=0)svg.append(svgElement('line',{x1:left,x2:width-right,y1:y(0),y2:y(0),stroke:'#93aa9c','stroke-dasharray':'4 5','class':'grade-zero'}));
   svgText(svg,left,14,unit);
   // Keep min/max per screen column so short spikes survive downsampling.
   const buckets=new Map(); let segment=0,last=null,lastSource=null;
@@ -136,7 +220,7 @@ function drawChart() {
   try{
     if(typeof ChartHover==='undefined'||typeof ChartHover.attach!=='function')throw new Error(l10n('悬停组件未加载'));
     ChartHover.attach(svg,{records:values,key,label,unit,factor,x,y,start,span,width,height,left,right,top,bottom,
-      formatTime:duration,formatValue:value=>number(value,key==='speed'||key==='altitude'?1:0),formatDate:date});
+      formatTime:duration,formatValue:value=>number(value,key==='grade'?2:key==='speed'||key==='altitude'?1:0),formatDate:date});
     hoverHint.textContent=l10n('悬停查看最近记录的时间与数值 · 左右方向键可逐点查看');
   }catch(error){
     hoverHint.textContent=l10n('曲线已更新，悬停组件暂不可用。请刷新页面后重试。');
@@ -187,8 +271,8 @@ function render(preserveMap=false) {
   $('laps').replaceChildren();
   laps.forEach((lap,index)=>{const speed=lap.avgSpeed ?? (lap.timer>0&&Number.isFinite(lap.distance)?lap.distance/lap.timer:null);const tr=document.createElement('tr');for(const value of [index+1,date(lap.startTime),number(lap.distance===null?null:lap.distance/1000,2)+' km',duration(lap.timer),number(speed===null?null:speed*3.6,1)+' km/h',number(lap.avgCadence)+' rpm',number(lap.avgHeartRate)+' bpm',number(lap.avgPower)+' W',number(lap.calories)+' kcal']){const td=document.createElement('td');td.textContent=value;tr.append(td);}$('laps').append(tr);});
   if(!laps.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=9;td.textContent=l10n('文件中没有圈段记录。');tr.append(td);$('laps').append(tr);}
-  $('details').textContent=l10n`已解析 ${records.length} 个记录点、${sessions.length} 个活动摘要、${laps.length} 个圈段、${activity.events.length} 个事件。消息数量：${Object.entries(activity.counts).map(([id,count])=>id+' → '+count).join('，')}。时间按本机时区显示。关闭长间隔压缩时，曲线在超过 60 秒的采样间隔处断开；地图轨迹始终按 60 秒间隔断段。`;
   $('export').disabled=!records.length;
+  $('exportAll').disabled=!(activity.sources||[]).some(s=>s.data?.rawMessages?.length);
   $('exportFit').hidden=loadedFiles.length<2;
   $('exportFit').disabled=!records.length||records.some(r=>!Number.isFinite(r.timestamp));
   $('mergeNote').hidden=loadedFiles.length<2;
@@ -246,11 +330,10 @@ $('gapThreshold').addEventListener('input',()=>{$('gapEstimate').textContent=l10
 $('estimateGaps').addEventListener('click',()=>{
   if(!activity)return;
   const result=ChartTimeline.estimateGaps(activity.records,activity.events);
-  const sources=result.groups.map((g,i)=>l10n`${result.groups.length>1?l10n`文件 ${i+1}：`:''}典型间隔 ${number(g.cadence,2)} 秒（约 ${number(g.hz,2)} Hz），参考样本 ${g.n} 个，筛除长间隔 ${g.excluded} 个`).join('；');
-  if(result.threshold===null){$('gapEstimate').textContent=[result.reason,sources].filter(Boolean).join(' ');return;}
+  if(result.threshold===null){$('gapEstimate').textContent=result.reason;return;}
   if(result.threshold>86400){$('gapEstimate').textContent=l10n('估计门槛超过一天，记录过于稀疏，请手动设置。');return;}
   $('gapThreshold').value=String(result.threshold);drawChart();
-  $('gapEstimate').textContent=l10n`已填入 ${number(result.threshold,1)} 秒，建议 ${number(result.range[0],1)}–${number(result.range[1],1)} 秒。${sources}。${result.supported?l10n('参考模型达到 99% 覆盖 / 至少 95% 置信目标'):l10n('样本不足以达到 95% 置信目标；参考模型置信度约 ')+number(result.confidence*100,1)+'%'}；这是采样间隔估计，不是暂停概率。`;
+  $('gapEstimate').textContent=l10n`已填入 ${number(result.threshold,1)} 秒，建议 ${number(result.range[0],1)}–${number(result.range[1],1)} 秒。`+' '+l10n(result.supported?'参考样本满足 99% 覆盖、95% 置信的估计目标。':'参考样本较少，建议核对门槛。');
 });
 $('mapSource').addEventListener('change',e=>{if(!routeMap.setSource(e.target.value))e.target.value=routeMap.source;});
 for(const id of ['mapKilometers','mapMaxSpeed','mapMaxAltitude','mapMinAltitude'])$(id).addEventListener('change',()=>routeMap.setMarkers({kilometers:$('mapKilometers').checked,maxSpeed:$('mapMaxSpeed').checked,maxAltitude:$('mapMaxAltitude').checked,minAltitude:$('mapMinAltitude').checked}));
@@ -314,7 +397,7 @@ if(typeof I18n!=='undefined')I18n.onChange(()=>{
   $('gapEstimate').textContent=l10n('建议门槛为常规采样间隔的 3–10 倍，也可点击智能估计。');
 });
 $('tileInput').addEventListener('change',e=>{if(routeMap.setTiles(e.target.files))$('mapSource').value='local';e.target.value='';});
-$('clear').addEventListener('click',()=>{generation++;loadedFiles=[];rebuild();$('fileInput').value='';$('filename').textContent='';$('date').textContent='';$('details').textContent='';$('warnings').textContent='';$('sport').textContent='';$('status').className='';$('status').textContent=l10n('已清除全部记录，可以重新添加文件。');});
+$('clear').addEventListener('click',()=>{generation++;loadedFiles=[];rebuild();$('fileInput').value='';$('filename').textContent='';$('date').textContent='';$('warnings').textContent='';$('sport').textContent='';$('status').className='';$('status').textContent=l10n('已清除全部记录，可以重新添加文件。');});
 function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 $('exportFit').addEventListener('click',()=>{
   if(!activity||loadedFiles.length<2)return;
@@ -323,8 +406,11 @@ $('exportFit').addEventListener('click',()=>{
 });
 $('export').addEventListener('click',()=>{
   if(!activity)return;
-  const keys=['timestamp','latitude','longitude','altitude','heartRate','cadence','distance','speed','power','temperature'];
-  const header=['time_utc','latitude_deg','longitude_deg','altitude_m','heart_rate_bpm','cadence_rpm','distance_m','speed_m_s','power_w','temperature_c'];
-  const rows=[header.join(',')];for(const r of activity.records)rows.push(keys.map(key=>r[key]===null?'':key==='timestamp'?new Date(r[key]).toISOString():String(r[key])).join(','));
-  download(new Blob(['\uFEFF'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'}),loadedFiles.length>1?'merged-records.csv':currentName.replace(/\.fit$/i,'')+'-records.csv');
+  try{download(FitCSV.recordsBlob(activity),loadedFiles.length>1?'merged-records.csv':currentName.replace(/\.fit$/i,'')+'-records.csv');}
+  catch(error){$('status').className='error';$('status').textContent=l10n('导出失败：')+error.message;}
+});
+$('exportAll').addEventListener('click',()=>{
+  if(!activity||(activity.sources||[]).every(s=>!s.data?.rawMessages?.length))return;
+  try{download(FitCSV.completeBlob(activity),loadedFiles.length>1?'merged-all-data.csv':currentName.replace(/\.fit$/i,'')+'-all-data.csv');}
+  catch(error){$('status').className='error';$('status').textContent=l10n('导出失败：')+error.message;}
 });

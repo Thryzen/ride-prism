@@ -31,33 +31,36 @@
       if (crc(bytes.slice(0, end + 2)) !== 0) warnings.push(l10n('文件 CRC 校验不一致，数据可能损坏。'));
     } else warnings.push(l10n('文件缺少尾部 CRC 校验值。'));
     let pos = headerSize, lastTime = null;
-    const definitions = new Map(), records = [], sessions = [], laps = [], events = [], devices = [], fileIds = [];
+    const definitions = new Map(), records = [], sessions = [], laps = [], events = [], devices = [], fileIds = [], rawMessages = [], developerDescriptions = new Map(),pendingDeveloper=new Map();
     const counts = {};
     function ensure(size) { if (pos + size > end) throw new Error(l10n('数据消息越界，FIT 文件可能损坏。')); }
-    function read(field, little) {
-      ensure(field.size);
+    function decode(field, little, position) {
       let value;
       const type = field.type & 31, spec = types[type];
       if (type === 7) {
-        value = new TextDecoder().decode(bytes.slice(pos, pos + field.size)).split('\0')[0];
+        value = new TextDecoder().decode(bytes.subarray(position, position + field.size)).split('\0')[0];
       } else if (spec) {
         const [size, getter, invalid] = spec;
         if (field.size % size) throw new Error(l10n('FIT 字段长度与数据类型不匹配。'));
         const values = [];
         for (let offset = 0; offset < field.size; offset += size) {
-          const raw = view[getter](pos + offset, little);
+          const raw = view[getter](position + offset, little);
           const floatInvalid = type === 8 || type === 9;
-          const invalidFloatBits = floatInvalid && bytes.slice(pos + offset, pos + offset + size).every(b => b === 255);
+          const invalidFloatBits = floatInvalid && bytes.subarray(position + offset, position + offset + size).every(b => b === 255);
           values.push(raw === invalid || invalidFloatBits || (typeof raw === 'number' && !Number.isFinite(raw)) ? null : typeof raw === 'bigint' ? raw.toString() : raw);
         }
         value = values.length === 1 ? values[0] : values;
-      } else value = Array.from(bytes.slice(pos, pos + field.size));
+      } else value = Array.from(bytes.subarray(position, position + field.size));
+      return value;
+    }
+    function read(field,little){
+      ensure(field.size);const value=decode(field,little,pos);
       pos += field.size;
       return value;
     }
     while (pos < end) {
       ensure(1);
-      const header = bytes[pos++], compressed = !!(header & 128);
+      const messageStart=pos,header = bytes[pos++], compressed = !!(header & 128);
       const local = compressed ? (header >> 5) & 3 : header & 15;
       if (!compressed && (header & 64)) {
         ensure(5);
@@ -70,20 +73,23 @@
         const developer = [];
         if (header & 32) {
           ensure(1); const countDev = bytes[pos++]; ensure(countDev * 3);
-          for (let i = 0; i < countDev; i++) { developer.push({size: bytes[pos + 1]}); pos += 3; }
+          for (let i = 0; i < countDev; i++) { developer.push({number:bytes[pos],size: bytes[pos + 1],index:bytes[pos+2]}); pos += 3; }
         }
         definitions.set(local, {little, global, fields, developer});
         continue;
       }
       const def = definitions.get(local);
       if (!def) throw new Error(l10n('数据消息缺少对应的 FIT 定义。'));
-      const fields = {};
+      const fields = {},developerFields=[];
       for (const field of def.fields) {
         // A compressed timestamp header replaces the timestamp field's bytes.
         if (compressed && field.number === 253) continue;
         fields[field.number] = read(field, def.little);
       }
-      for (const field of def.developer) { ensure(field.size); pos += field.size; }
+      for (const field of def.developer) {
+        ensure(field.size);const key=field.index+':'+field.number,entry={...field,position:pos,description:developerDescriptions.get(key)||null};developerFields.push(entry);
+        if(!entry.description){if(!pendingDeveloper.has(key))pendingDeveloper.set(key,[]);pendingDeveloper.get(key).push(entry);}pos += field.size;
+      }
       if (compressed) {
         if (lastTime === null) throw new Error(l10n('压缩时间戳缺少基准时间。'));
         let time = Math.floor(lastTime / 32) * 32 + (header & 31);
@@ -91,6 +97,11 @@
         fields[253] = time;
       }
       if (typeof fields[253] === 'number') lastTime = fields[253];
+      const rawMessage={number:def.global,header,compressed,definition:def,fields,developerFields,bytes:bytes.subarray(messageStart,pos)};rawMessages.push(rawMessage);
+      if(def.global===206&&Number.isInteger(fields[0])&&Number.isInteger(fields[1])){
+        const key=fields[0]+':'+fields[1],description={index:fields[0],number:fields[1],type:fields[2],name:fields[3],scale:fields[6],offset:fields[7],units:fields[8],components:fields[5],bits:fields[9],accumulate:fields[10],nativeMessage:fields[14],nativeField:fields[15]};developerDescriptions.set(key,description);
+        for(const entry of pendingDeveloper.get(key)||[])entry.description=description;pendingDeveloper.delete(key);
+      }
       counts[def.global] = (counts[def.global] || 0) + 1;
       const scaled = (n, scale = 1, offset = 0) => typeof fields[n] === 'number' ? fields[n] / scale - offset : null;
       const timestamp = typeof fields[253] === 'number' ? (fields[253] + epoch) * 1000 : null;
@@ -100,12 +111,12 @@
       if (def.global === 20) records.push({
         timestamp, latitude: scaled(0, 2147483648 / 180), longitude: scaled(1, 2147483648 / 180),
         altitude: scaled(78, 5, 500) ?? scaled(2, 5, 500), heartRate: scaled(3), cadence: scaled(4),
-        distance: scaled(5, 100), speed: scaled(73, 1000) ?? scaled(6, 1000), power: scaled(7), temperature: scaled(13)
+        distance: scaled(5, 100), speed: scaled(73, 1000) ?? scaled(6, 1000), power: scaled(7), temperature: scaled(13), grade: scaled(9,100), fitRecord:rawMessage
       });
       if (def.global === 18 || def.global === 19) {
         const session = def.global === 18;
         const item = {timestamp, startTime: typeof fields[2] === 'number' ? (fields[2] + epoch) * 1000 : null,
-          elapsed: scaled(7, 1000), timer: scaled(8, 1000), distance: scaled(9, 100),
+          elapsed: scaled(7, 1000), timer: scaled(8, 1000), distance: scaled(9, 100), totalCycles: scaled(10),
           calories: scaled(11), avgSpeed: scaled(session ? 124 : 110, 1000) ?? scaled(session ? 14 : 13, 1000),
           maxSpeed: scaled(session ? 125 : 111, 1000) ?? scaled(session ? 15 : 14, 1000),
           minAltitude: scaled(session ? 127 : 113, 5, 500) ?? scaled(session ? 71 : 62, 5, 500),
@@ -118,8 +129,14 @@
       }
       if (def.global === 21) events.push({timestamp, event: fields[0], eventType: fields[1]});
     }
+    for(const message of rawMessages)for(const field of message.developerFields){
+      field.bytes=bytes.subarray(field.position,field.position+field.size);delete field.position;
+      const type=field.description?.type,spec=types[type&31];
+      field.decoded=!!(Number.isInteger(type)&&((type&31)===7||spec&&field.size%spec[0]===0));
+      field.value=field.decoded?decode({...field,type},message.definition.little,field.bytes.byteOffset):Array.from(field.bytes);
+    }
     if (!records.length) warnings.push(l10n('没有逐点活动记录；此文件可能是训练计划、设备设置或仅含摘要。'));
-    return {records, sessions, laps, events, devices, fileIds, counts, warnings};
+    return {records, sessions, laps, events, devices, fileIds, counts, warnings,rawMessages};
   }
   const api = {parse, crc};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

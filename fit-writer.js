@@ -8,7 +8,7 @@
   const u32=(id,key,scale=1,offset=0)=>({id,key,size:4,type:134,write:'setUint32',invalid:4294967295,min:0,max:4294967294,scale,offset});
   const time=(id,key)=>({...u32(id,key),convert:timestamp});
   const coord=(id,key)=>({id,key,size:4,type:133,write:'setInt32',invalid:2147483647,min:-2147483648,max:2147483646,scale:2147483648/180});
-  const recordFields=[time(253,'timestamp'),coord(0,'latitude'),coord(1,'longitude'),u32(78,'altitude',5,500),u8(3,'heartRate'),u8(4,'cadence'),u32(5,'distance',100),u32(73,'speed',1000),u16(7,'power'),{id:13,key:'temperature',size:1,type:1,write:'setInt8',invalid:127,min:-128,max:126}];
+  const recordFields=[time(253,'timestamp'),coord(0,'latitude'),coord(1,'longitude'),u32(78,'altitude',5,500),u8(3,'heartRate'),u8(4,'cadence'),u32(5,'distance',100),u32(73,'speed',1000),u16(7,'power'),{id:13,key:'temperature',size:1,type:1,write:'setInt8',invalid:127,min:-128,max:126},{id:9,key:'grade',size:2,type:131,write:'setInt16',invalid:32767,min:-32768,max:32766,scale:100}];
   function crc(bytes){let value=0;for(const byte of bytes){value^=byte;for(let bit=0;bit<8;bit++)value=value&1?(value>>>1)^0xA001:value>>>1;}return value;}
   function mean(records,key){let sum=0,count=0;for(const r of records)if(Number.isFinite(r[key])){sum+=r[key];count++;}return count?sum/count:null;}
   function durationOf(source){
